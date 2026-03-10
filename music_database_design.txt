@@ -1,0 +1,17 @@
+Music Database
+Requirements:
+- Add/Modify/Delete Album
+- Display Album
+  - Artist, Year, Genre, Cover, Songs, Medium (LP, CD, Digital)
+- Search for Album, Artist, Genre, Song, Year
+- Sort Lists for Artist, A-Z, Genre, Year
+
+Database Tables:
+- Album
+  - Year, Genre, Artist, Cover, Songs, Medium
+- Songs
+  - Tracks, Artist (foreign), Album (foreign)
+Genres
+  - Name
+Artists
+  - Name, Genre, Year of founding, Albums
