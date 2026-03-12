@@ -1,0 +1,2 @@
+FLASK_APP=music_database.py
+FLASK_DEBUG=1
