@@ -10,6 +10,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 
+# Creating and setting up Flask app
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -17,13 +18,16 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
 
+    # Defining blueprints for packages
     from app.errors import bp as errors_bp
 
     app.register_blueprint(errors_bp)
+
     from app.main import bp as main_bp
 
     app.register_blueprint(main_bp)
 
+    # App logging
     if not app.debug and not app.testing:
 
         if not os.path.exists("logs"):
