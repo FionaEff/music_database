@@ -1,0 +1,70 @@
+{% extends "base.html" %} {% block content %}
+<h2>{{ album.title }} - Tracks</h2>
+<form method="POST">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Duration (sec)</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for track in tracks %}
+      <tr>
+        <td>
+          <input
+            type="number"
+            name="number_{{ track.id }}"
+            value="{{ track.track_number }}"
+            class="form-control"
+          />
+        </td>
+
+        <td>
+          <input
+            type="text"
+            name="title_{{ track.id }}"
+            value="{{ track.title }}"
+            class="form-control"
+          />
+        </td>
+
+        <td>
+          <input
+            type="number"
+            name="duration_{{ track.id }}"
+            value="{{ track.duration_seconds }}"
+            class="from-control"
+          />
+        </td>
+        <td>
+            <button type="submit" name="delete_track_id" value="{{ track.id }}" class="btn btn-danger btn-sm" onclick="return confirm('Delerte this track?');">
+                Delete
+            </button>
+        </td>
+      </tr>
+      {% endfor %}
+
+      <tr>
+        <td>
+            <input type="number" name="new_track_number" placeholder="#" class="form-control">
+        </td>
+        <td>
+            <input type="text" name="new_title" placeholder="Track title" class="form-control">
+        </td>
+        <td>
+            <input type="number" name="new_duration" placeholder="sec" class="form-conrol">
+        </td>
+        <td>
+            <span class="text-muted">NEw</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+</a>
+{% endblock %}

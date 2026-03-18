@@ -49,10 +49,10 @@ def add_album():
     genres = Genres.query.order_by(Genres.name).all()
     artists = Artists.query.order_by(Artists.name).all()
 
-    form.genre.choices = [(0, "---")] + [
+    form.existing_genre.choices = [(0, "---")] + [
         (g.id, g.name) for g in genres
     ]  # Filling genre dropdown menu, starting with ---
-    form.artist.choices = [(0, "---")] + [
+    form.existing_artist.choices = [(0, "---")] + [
         (g.id, g.name) for g in artists
     ]  # Filling artists dropdown menu, starting with ---
 
@@ -64,7 +64,7 @@ def add_album():
             db.session.add(artist)
             db.session.flush()
         else:
-            artist = db.session.get(Artists, form.artist.data)
+            artist = db.session.get(Artists, form.existing_artist.data)
 
         # Genre handling
         if form.new_genre.data:
@@ -72,7 +72,7 @@ def add_album():
             db.session.add(genre)
             db.session.flush()
         else:
-            genre = db.session.get(Genres, form.genre.data)
+            genre = db.session.get(Genres, form.existing_genre.data)
 
         # Add album to database
         new_album = Albums(
@@ -114,14 +114,62 @@ def add_album():
                     new_album.cover_path = cover_path
 
         flash("The album has been added to de database.")
-        return redirect(url_for("main.edit tracks", album_id=new_album.id))
+        return redirect(url_for("main.edit_tracks", album_id=new_album.id))
 
     return render_template("add_album.html", title="Add Album", form=form)
 
 
 @bp.route("/album/<int:album_id>/tracks", methods=["GET", "POST"])
 def edit_tracks(album_id):
+
     album = db.session.get(Albums, album_id)
+
+    if not album:
+        flash("Album not found.")
+        return redirect(url_for("main.albums"))
+
+    if request.method == "POST":
+
+        # Delete a track
+        delete_id = request.form.get("delete_track_id")
+        if delete_id:
+            track = db.session.get(Tracks, int(delete_id))
+            if track:
+                db.session.delete(track)
+                db.session.commit()
+                flash("Track deleted.")
+            return redirect(url_for("main.edit_tracks", album_id=album.id))
+
+        # Update existing track
+        for track in album.tracks:
+            track.title = request.form.get(f"title_{track.id}")
+
+            try:
+                track.track_number = int(request.form.get(f"number_{track.id}") or 0)
+                track.duration_seconds = int(
+                    request.form.get(f"duration_{track.id}") or 0
+                )
+            except ValueError:
+                pass
+
+        # Add new track
+        new_title = request.form.get("new_title")
+        new_track_number = request.form.get("new_track_number")
+        new_duration = request.form.get("new_duration")
+
+        if new_title and new_title.strip():
+            new_track = Tracks(
+                album=album,
+                title=new_title.strip(),
+                track_number=int(new_track_number or 0),
+                duration=int(new_duration) or 0,
+            )
+            db.session.add(new_track)
+
+        db.session.commit()
+        flash("Tracks updated.")
+
+        return redirect(url_for("main.edit_tracks", album_id=album.id))
 
     tracks = sorted(album.tracks, key=lambda t: t.track_number)
 

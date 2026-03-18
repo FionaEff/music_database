@@ -1,0 +1,3 @@
+{% extends "base.html" %} {% import "bootstrap_wtf.html" as wtf %} {% block
+content %} {% if form %} {{ wtf.quick_form(form, url_for("main.add_album")) }}
+{% endif %} {% endblock %}

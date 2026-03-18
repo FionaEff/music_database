@@ -16,10 +16,10 @@ class AddAlbumForm(FlaskForm):
     new_artist = StringField("Artist", validators=[Length(max=128)])
 
     existing_genre = SelectField("Choose a genre", coerce=int)
-    new_genre = StringField("Genre", validators=Length(max=32))
+    new_genre = StringField("Genre", validators=[Length(max=32)])
 
     year = IntegerField("Year")
-    label = StringField("Label", validators=[Length(min=0, max=64)])
+    label = StringField("Label", validators=[Length(max=64)])
 
     format = SelectField(
         "Format",
@@ -32,34 +32,36 @@ class AddAlbumForm(FlaskForm):
 
     submit = SubmitField("Add Album")
 
+    def _validate_choice_or_input(self, select_field, text_field, field_name):
+        existing = select_field.data != 0
+        new = bool(text_field.data and text_field.data.strip())
+
+        if not existing and not new:
+            text_field.errors.append(
+                f"Select an existing {field_name} or enter a new one."
+            )
+            return False
+
+        if existing and new:
+            text_field.error.append(
+                f"Select an existing {field_name} or enter a new one, not both."
+            )
+            return False
+
+        return True
+
     def validate(self, extra_validators=None):
         if not super().validate(extra_validators):
             return False
 
         valid = True
 
-        # Artist validation
-        if self.artist.data == 0 and not self.new_artist.data:
-            self.new_artist.errors.append(
-                "Select an existing artist or enter a new one."
-            )
-            valid = False
+        valid &= self._validate_choice_or_input(
+            self.existing_artist, self.new_artist, "artist"
+        )
 
-        if self.artist.data != 0 and not self.new_artist.data:
-            self.new_artist.errors.append(
-                "Select an existing artist or enter a new one, not both."
-            )
-            valid = False
-
-        # Genre validation
-        if self.genre.data == 0 and not self.new_genre.data:
-            self.new_genre.errors.append("Select an existing genre or enter a new one.")
-            valid = False
-
-        if self.genre.data != 0 and not self.new_genre.data:
-            self.new_genre.errors.append(
-                "Select an existing genre or enter a new one, not both."
-            )
-            valid = False
+        valid &= self._validate_choice_or_input(
+            self.existing_genre, self.new_genre, "genre"
+        )
 
         return valid
