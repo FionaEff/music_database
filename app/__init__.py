@@ -27,6 +27,10 @@ def create_app(config_class=Config):
 
     app.register_blueprint(main_bp)
 
+    from app.services import bp as services_bp
+
+    app.register_blueprint(services_bp)
+
     # App logging
     if not app.debug and not app.testing:
 
