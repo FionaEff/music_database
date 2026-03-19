@@ -65,3 +65,11 @@ class AddAlbumForm(FlaskForm):
         )
 
         return valid
+
+
+class EditArtistForm(FlaskForm):
+    name = StringField("Artist Name", validators=[DataRequired(), Length(max=128)])
+    country = StringField("Country", validators=[Length(max=64)])
+    year_of_founding = IntegerField("Year of Founding")
+    notes = StringField("Notes", validators=[Length(max=256)])
+    submit = SubmitField("Save Changes")

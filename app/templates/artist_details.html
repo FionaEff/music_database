@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block content %}
+<h2>{{ artist.name }}</h2>
+
+<p><strong>Country: </strong>{{ artist.country or "-" }}</p>
+<p><strong>Founded: </strong>{{ artist.year_of_founding or "-" }}</p>
+
+{% if artist.notes %}
+<p><strong>Notes: </strong>{{ artist.notes }}</p>
+{% endif %}
+
+<a
+  href="{{ url_for('main.edit_artist', artist_id=artist.id) }}"
+  class="btn btn-primary mb-3"
+  >Edit Artist</a
+>
+
+<hr />
+
+<h3>Albums</h3>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Year</th>
+      <th>Format</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for album in albums %}
+    <tr class="position-relative">
+      <td>{{ album.title }}</td>
+      <td>{{ album.year or "-" }}</td>
+      <td>{{ album.format.value.capitalize() }}</td>
+      <td>
+        <a
+          href="{{ url_for('main.album_details', album_id=album.id) }}"
+          class="stretched-link"
+        ></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

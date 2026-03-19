@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %}
+<h2>Albums</h2>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Cover</th>
+      <th>Artist</th>
+      <th>Title</th>
+      <th>Year</th>
+      <th>Format</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for album in albums %}
+    <tr class="position-relative">
+      <td>
+        {% if album.cover_path %}
+        <img
+          src="{{ url_for('static', filename=album.cover_path) }}"
+          width="50"
+        />
+        {% else %}
+        <span class="text-muted">No Cover</span>
+        {% endif %}
+      </td>
+
+      <td>{{ album.artist.name }}</td>
+      <td>{{ album.title }}</td>
+      <td>{{ album.year or "-" }}</td>
+      <td>{{ album.format.value.capitalize() }}</td>
+      <td>
+        <a
+          href="{{ url_for('main.album_details', album_id=album.id) }}"
+          class="stretched-link"
+        ></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('main.add_album') }}" class="btn btn-primary">Add Album</a>
+{% endblock %}

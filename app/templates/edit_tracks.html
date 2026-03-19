@@ -40,25 +40,46 @@
           />
         </td>
         <td>
-            <button type="submit" name="delete_track_id" value="{{ track.id }}" class="btn btn-danger btn-sm" onclick="return confirm('Delerte this track?');">
-                Delete
-            </button>
+          <button
+            type="submit"
+            name="delete_track_id"
+            value="{{ track.id }}"
+            class="btn btn-danger btn-sm"
+            onclick="return confirm('Delete this track?');"
+          >
+            Delete
+          </button>
         </td>
       </tr>
       {% endfor %}
 
       <tr>
         <td>
-            <input type="number" name="new_track_number" placeholder="#" class="form-control">
+          <input
+            type="number"
+            name="new_track_number"
+            placeholder="#"
+            class="form-control"
+          />
         </td>
         <td>
-            <input type="text" name="new_title" placeholder="Track title" class="form-control">
+          <input
+            type="text"
+            name="new_title"
+            placeholder="Track title"
+            class="form-control"
+          />
         </td>
         <td>
-            <input type="number" name="new_duration" placeholder="sec" class="form-conrol">
+          <input
+            type="number"
+            name="new_duration"
+            placeholder="sec"
+            class="form-conrol"
+          />
         </td>
         <td>
-            <span class="text-muted">NEw</span>
+          <span class="text-muted">New</span>
         </td>
       </tr>
     </tbody>
@@ -66,5 +87,10 @@
 
   <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
-</a>
+<a
+  href="{{ url_for('main.album_details', album_id=album.id) }}"
+  class="btn btn-secondary mt-2"
+  >Cancel</a
+>
+
 {% endblock %}
