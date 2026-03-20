@@ -35,7 +35,9 @@ pip install gunicorn
 
 Create an .env file inside the music_database directory for storing environment variables.
 
+```bash
 SECRET_KEY=b35d193614fc47178879331eb8387946
+```
 
 You can create your own secret key using the following command:
 
@@ -51,6 +53,7 @@ gunicorn -b localhost:8000 -w 4 music_database:app
 Configure the supervisor utility to automatically restart the server, should it crash or the machine be restarted.
 Create the conf file called music_database.conf in /etc/supervisor/conf.d with the following content:
 
+```bash
 [program:music_database]
 command=/home/<username>/music_database/venv/bin/gunicorn -b localhost:8000 -w 4 music_database:app
 directory=/home/<username>/music_database
@@ -59,6 +62,7 @@ autostar=true
 autorestart=true
 stopasgroup=true
 killasgroup=true
+```
 
 After creating this configuration file, you have to reload the supervisor service.
 
