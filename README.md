@@ -39,7 +39,7 @@ Create an .env file inside the music_database directory for storing environment 
 SECRET_KEY=b35d193614fc47178879331eb8387946
 ```
 
-You can create your own secret key using the following command:
+You can create your own randomly generated secret key using the following command:
 
 ```bash
 python3 -c "import uuid; print(uuid.uuid4().hex)"
