@@ -1,10 +1,14 @@
 {% extends "base.html" %} {% import "bootstrap_wtf.html" as wtf %} {% block
 content %}
-<h2>Edit Artist</h2>
-{{ wtf.quick_form(form) }}
+<h2>{{ title }}</h2>
+{{ wtf.quick_form(form) }} {% if not artist %}
+<a href="{{ url_for('main.artists') }}" class="btn btn-secondary mt-2"
+  >Cancel</a
+>
+{% else %}
 <a
   href="{{ url_for('main.artist_details', artist_id=artist.id) }}"
   class="btn btn-secondary mt-2"
   >Cancel</a
 >
-{% endblock %}
+{% endif %} {% endblock %}

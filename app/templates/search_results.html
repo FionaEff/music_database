@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% block content %}
+<h2>Search results for "{{ query }}"</h2>
+
+<hr />
+
+<h3>Artists</h3>
+
+{% if artists %}
+<ul class="list-group mb-4">
+  {% for artist in artists %}
+  <li class="list-group-item">
+    <a href="{{ url_for('main.artist_details', artist_id=artist.id) }}"
+      >{{ artist.name }}</a
+    >
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">No artists found.</p>
+{% endif %}
+
+<hr />
+
+<h3>Albums</h3>
+
+{% if albums %}
+<ul class="list-group mb-4">
+  {% for album in albums %}
+  <li class="list-group-item">
+    <a href="{{ url_for('main.album_details', album_id=album.id) }}"
+      >{{ album.artist.name }} - {{ album.title }}</a
+    >
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">No albums found.</p>
+{% endif %}
+
+<hr />
+
+<h3>Tracks</h3>
+
+{% if tracks %}
+<ul class="list-group">
+  {% for track in tracks %}
+  <li class="list-group-item">
+    <a href="{{ url_for('main.album_details', album_id=track.album.id) }}"
+      >{{ track.title }}</a
+    >
+    <br />
+    <small class="text-muted">
+      {{ track.album.artist.name }} - {{ track.album.title }}
+    </small>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">No tracks found.</p>
+{% endif %} {% endblock %}
+

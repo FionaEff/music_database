@@ -1,7 +1,8 @@
 import sqlalchemy as sa
+from sqlalchemy import or_
 from sqlalchemy.orm import selectinload
-from flask import render_template, flash, redirect, url_for, request, current_app, g
-from app import db
+from flask import render_template, flash, redirect, url_for, request
+from app import db, Config
 from app.main import bp
 from app.main.forms import AddAlbumForm, EditArtistForm
 from app.models import (
@@ -251,6 +252,118 @@ def edit_artist(artist_id):
     )
 
 
+@bp.route("/artist/add", methods=["GET", "POST"])
+def add_artist():
+
+    form = EditArtistForm()
+
+    if form.validate_on_submit():
+
+        # Avoid duplicates
+        existing = db.session.query(Artists).filter_by(name=form.name.data).first()
+        if existing:
+            flash("Artist already exists.")
+            return redirect(url_for("main.artist_details", artist_id=existing.id))
+
+        artist = Artists(
+            name=form.name.data,
+            country=form.country.data,
+            year_of_founding=form.year_of_founding.data or 0,
+            notes=form.notes.data,
+        )
+
+        db.session.add(artist)
+        db.session.commit()
+
+        flash("Artist added.")
+        return redirect(url_for("main.artist_details", artist_id=artist.id))
+
+    return render_template("edit_artist.html", title="Add a new Artist", form=form)
+
+
+@bp.route("/artist/<int:artist_id>/delete", methods=["POST"])
+def delete_artist(artist_id):
+
+    artist = db.session.get(Artists, artist_id)
+
+    if not artist:
+        flash("Artist not found.")
+        return redirect(url_for("main.artists"))
+
+    # Check if artist has albums
+    if artist.albums:
+        flash("Cannot delete artist with existsing albums.")
+        return redirect(url_for("main.artist_details", artist_id=artist.id))
+
+    db.session.delete(artist)
+    db.session.commit()
+
+    flash("Artist deleted.")
+    return redirect(url_for("main.artists"))
+
+
 @bp.route("/search", methods=["GET", "POST"])
 def search():
-    return render_template("search.html", title="Search")
+
+    query = request.args.get("q", "").strip()
+
+    limit = Config.SEARCH_LIMIT
+
+    # Search artists
+    artists = (
+        db.session.query(Artists)
+        .filter(Artists.name.ilike(f"%{query}%"))
+        .order_by(Artists.name)
+        .limit(limit)
+        .all()
+    )
+
+    # Search albums
+    albums = (
+        db.session.query(Albums)
+        .options(selectinload(Albums.artist), selectinload(Albums.genres))
+        .join(Artists)
+        .outerjoin(Albums.genres)
+        .filter(
+            or_(
+                Albums.title.ilike(f"%{query}%"),
+                Artists.name.ilike(f"%{query}%"),
+                Albums.genres.any(Genres.name.ilike(f"%{query}%")),
+                sa.cast(Albums.year, sa.String).ilike(f"%{query}%"),
+                sa.cast(Albums.format, sa.String).ilike(f"%{query}%"),
+            )
+        )
+        .distinct()
+        .order_by(Albums.title.ilike(f"{query}%").desc(), Albums.title)
+        .limit(limit)
+        .all()
+    )
+
+    # Search tracks
+    tracks = (
+        db.session.query(Tracks)
+        .options(selectinload(Tracks.album).selectinload(Albums.artist))
+        .join(Albums)
+        .join(Artists)
+        .filter(
+            or_(
+                Tracks.title.ilike(f"%{query}%"),
+                Albums.title.ilike(f"%{query}%"),
+                Artists.name.ilike(f"%{query}%"),
+            )
+        )
+        .order_by(Tracks.title)
+        .limit(limit)
+        .all()
+    )
+
+    if not any([artists, albums, tracks]):
+        flash("No results found.")
+
+    return render_template(
+        "search_results.html",
+        query=query,
+        artists=artists,
+        albums=albums,
+        tracks=tracks,
+    )

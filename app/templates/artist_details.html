@@ -43,4 +43,15 @@
     {% endfor %}
   </tbody>
 </table>
-{% endblock %}
+
+{% if artist.albums %}
+<button class="btn btn-danger" disabled>Delete Artist (has albums)</button>
+{% else %}
+<form
+  method="POST"
+  action="{{ url_for('main.delete_artist', artist_id=artist.id) }}"
+  onsubmit="return confirm('Are you sure you want to delete this artist?');"
+>
+  <button type="submit" class="btn btn-danger">Delete Artist</button>
+</form>
+{% endif %} {% endblock %}

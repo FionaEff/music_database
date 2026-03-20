@@ -16,3 +16,4 @@ class Config:
     DISCOGS_API = "https://api.discogs.com/releases"
 
     ALBUMS_PER_PAGE = 25
+    SEARCH_LIMIT = 25

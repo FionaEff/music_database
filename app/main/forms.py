@@ -1,8 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, SelectField, IntegerField
-from wtforms.validators import ValidationError, DataRequired, Length
-from app import db
-import sqlalchemy as sa
+from wtforms import StringField, SubmitField, SelectField, IntegerField
+from wtforms.validators import DataRequired, Length
 
 
 class EmptyForm(FlaskForm):
@@ -73,3 +71,4 @@ class EditArtistForm(FlaskForm):
     year_of_founding = IntegerField("Year of Founding")
     notes = StringField("Notes", validators=[Length(max=256)])
     submit = SubmitField("Save Changes")
+    
