@@ -27,7 +27,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Install the Gunicorn webserver for Python web application.s
+Install the Gunicorn webserver for Python web applications.
 
 ```bash
 pip install gunicorn

@@ -16,7 +16,8 @@ from app.models import (
 @bp.route("/", methods=["GET"])
 @bp.route("/index", methods=["GET"])
 def index():
-    return render_template("index.html", title="Home")
+    albums = db.session.query(Albums).order_by(Albums.id.desc()).limit(5)
+    return render_template("index.html", title="Home", albums=albums)
 
 
 @bp.route("/albums", methods=["GET"])
